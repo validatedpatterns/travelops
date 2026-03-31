@@ -1,0 +1,25 @@
+# This goal of this metadata is mainly used as a source of truth for
+# documentation and qe
+metadata_version: "1.0"
+name: travelops
+description: TravelOps pattern deployed using validated patterns on OpenShift
+pattern_version: "1.0"
+display_name: TravelOps
+repo_url: https://github.com/validatedpatterns-sandbox/travelops
+docs_repo_url: https://github.com/validatedpatterns/docs
+issues_url: https://github.com/validatedpatterns-sandbox/travelops/issues
+docs_url: https://validatedpatterns.io/patterns/travelops/
+ci_url: https://validatedpatterns.io/ci/
+# can be sandbox, tested or maintained
+tier: sandbox
+owners: day0hero
+requirements:
+
+# Loosely defined extra features like hypershift support, non-openshift
+# kubernetes support, spoke support
+extra_features:
+  hypershift_support: false
+  spoke_support: false
+
+external_requirements:
+# external quay, s3 bucket, agof tokens to access paywalled material, manifests, rag-llm hw (only selected regions)
