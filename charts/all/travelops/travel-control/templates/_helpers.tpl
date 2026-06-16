@@ -108,21 +108,21 @@ done
 set -euo pipefail
 
 GATEWAY_NS={{ .Values.gateway.namespace | default "travel-control" | quote }}
-GATEWAY_NAME="travel-control-gateway"
+ROUTE_NAME="travel-control"
 CONSOLE_LINK_NAME="travel-console-link"
 IMAGE_URL="https://github.com/kiali/kiali/blob/master/frontend/src/components/ChatBot/icons/kiali_logo.svg"
 
 for i in $(seq 1 60); do
-  HOST=$(oc get gtw "${GATEWAY_NAME}" -n "${GATEWAY_NS}" -o jsonpath='{.status.addresses[0].value}' 2>/dev/null || true)
+  HOST=$(oc get route "${ROUTE_NAME}" -n "${GATEWAY_NS}" -o jsonpath='{.spec.host}' 2>/dev/null || true)
   if [[ -n "${HOST}" ]]; then
     break
   fi
-  echo "Waiting for gateway address..."
+  echo "Waiting for route host..."
   sleep 5
 done
 
 if [[ -z "${HOST}" ]]; then
-  echo "ERROR: Gateway address not available"
+  echo "ERROR: Route host not available"
   exit 1
 fi
 

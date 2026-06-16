@@ -5,9 +5,9 @@ metadata:
   name: travelops-console-link
 rules:
 - apiGroups:
-  - gateway.networking.k8s.io
+  - route.openshift.io
   resources:
-  - gateways
+  - routes
   verbs:
   - get
   - list
