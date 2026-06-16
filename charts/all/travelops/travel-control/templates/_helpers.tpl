@@ -102,3 +102,45 @@ for apps in control; do
   echo "✅ ${apps} in ${NS} is fully rolled out with sidecars."
 done
 {{- end }}
+
+{{- define "travel-control.consoleLink" }}
+#!/bin/bash
+set -euo pipefail
+
+GATEWAY_NS={{ .Values.gateway.namespace | default "travel-control" | quote }}
+GATEWAY_NAME="travel-control-gateway"
+CONSOLE_LINK_NAME="travel-console-link"
+IMAGE_URL="https://github.com/kiali/kiali/blob/master/frontend/src/components/ChatBot/icons/kiali_logo.svg"
+
+for i in $(seq 1 60); do
+  HOST=$(oc get gtw "${GATEWAY_NAME}" -n "${GATEWAY_NS}" -o jsonpath='{.status.addresses[0].value}' 2>/dev/null || true)
+  if [[ -n "${HOST}" ]]; then
+    break
+  fi
+  echo "Waiting for gateway address..."
+  sleep 5
+done
+
+if [[ -z "${HOST}" ]]; then
+  echo "ERROR: Gateway address not available"
+  exit 1
+fi
+
+HREF="https://${HOST}"
+
+oc apply -f - <<EOF
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: ${CONSOLE_LINK_NAME}
+spec:
+  href: "${HREF}"
+  location: ApplicationMenu
+  text: Travel Portal
+  applicationMenu:
+    section: Travelops
+    imageURL: "${IMAGE_URL}"
+EOF
+
+echo "ConsoleLink updated with href=${HREF}"
+{{- end }}
