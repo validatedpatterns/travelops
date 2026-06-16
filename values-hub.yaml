@@ -3,42 +3,45 @@ clusterGroup:
   isHubCluster: true
 
   namespaces:
-    - vault
-    - golang-external-secrets
-    - travel-agency:
-        labels:
-          istio-discovery: enabled
-          istio.io/rev: default
-    - travel-portal:
-        labels:
-          istio-discovery: enabled
-          istio.io/rev: default
-    - travel-control:
-        labels:
-          istio-discovery: enabled
-          istio.io/rev: default
-    - istio-cni:
-        labels:
-          istio-discovery: enabled
-    - istio-system:
-        labels:
-          istio-discovery: enabled
-    - tempo:
-        labels:
-          istio-discovery: enabled
-    - openshift-tempo-operator:
-        labels:
-          openshift.io/cluster-monitoring: true
-        operatorGroup: true
-        targetNamespaces:
-    - openshift-opentelemetry-operator:
-        operatorGroup: true
-        targetNamespaces:
-    - openshift-cluster-observability-operator:
-        labels:
-          openshift.io/cluster-monitoring: true
-        operatorGroup: true
-        targetNamespaces:
+    vault:
+    external-secrets-operator:
+      operatorGroup: true
+      targetNamespaces: []
+    external-secrets:
+    travel-agency:
+      labels:
+        istio-discovery: enabled
+        istio.io/rev: default
+    travel-portal:
+      labels:
+        istio-discovery: enabled
+        istio.io/rev: default
+    travel-control:
+      labels:
+        istio-discovery: enabled
+        istio.io/rev: default
+    istio-cni:
+      labels:
+        istio-discovery: enabled
+    istio-system:
+      labels:
+        istio-discovery: enabled
+    tempo:
+      labels:
+        istio-discovery: enabled
+    openshift-tempo-operator:
+      labels:
+        openshift.io/cluster-monitoring: true
+      operatorGroup: true
+      targetNamespaces:
+    openshift-opentelemetry-operator:
+      operatorGroup: true
+      targetNamespaces:
+    openshift-cluster-observability-operator:
+      labels:
+        openshift.io/cluster-monitoring: true
+      operatorGroup: true
+      targetNamespaces:
 
   subscriptions:
     servicemesh:
@@ -57,8 +60,12 @@ clusterGroup:
     cluster-observability:
       name: cluster-observability-operator
       namespace: openshift-cluster-observability-operator
+    eso:
+      name: openshift-external-secrets-operator
+      namespace: external-secrets-operator
+      channel: stable-v1
 
-  projects:
+  argoProjects:
     - hub
     - servicemesh
     - travelops
@@ -68,39 +75,39 @@ clusterGroup:
     vault:
       name: vault
       namespace: vault
-      project: hub
+      argoProject: hub
       chart: hashicorp-vault
       chartVersion: 0.1.*
-    golang-external-secrets:
-      name: golang-external-secrets
-      namespace: golang-external-secrets
-      project: hub
-      chart: golang-external-secrets
-      chartVersion: 0.1.*
+    openshift-external-secrets:
+      name: openshift-external-secrets
+      namespace: external-secrets
+      argoProject: hub
+      chart: openshift-external-secrets
+      chartVersion: 0.0.*
     mysql:
       name: mysqldb
       namespace: travel-agency
-      project: travelops
+      argoProject: travelops
       path: charts/all/travelops/mysqldb
     agency:
       name: travel-agency
       namespace: travel-agency
-      project: travelops
+      argoProject: travelops
       path: charts/all/travelops/travel-agency
     portal:
       name: travel-portal
       namespace: travel-portal
-      project: travelops
+      argoProject: travelops
       path: charts/all/travelops/travel-portal
     control:
       name: travel-control
       namespace: travel-control
-      project: travelops
+      argoProject: travelops
       path: charts/all/travelops/travel-control
     servicemesh:
       name: servicemesh
       namespace: istio-system
-      project: servicemesh
+      argoProject: servicemesh
       chart: servicemesh
       chartVersion: 0.1.*
       overrides:
@@ -109,14 +116,14 @@ clusterGroup:
     temposttack:
       name: tempostack
       namespace: tempo
-      project: distributed-tracing
+      argoProject: distributed-tracing
       path: charts/all/tempostack
       extraValueFiles:
         - /values-distributed-tracing.yaml
     tracing:
       name: distributed-tracing
       namespace: istio-system
-      project: distributed-tracing
+      argoProject: distributed-tracing
       path: charts/all/distributed-tracing
       extraValueFiles:
         - /values-distributed-tracing.yaml
