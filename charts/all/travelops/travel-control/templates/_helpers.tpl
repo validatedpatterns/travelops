@@ -110,7 +110,7 @@ set -euo pipefail
 GATEWAY_NS={{ .Values.gateway.namespace | default "travel-control" | quote }}
 ROUTE_NAME="travel-control"
 CONSOLE_LINK_NAME="travel-console-link"
-IMAGE_URL="https://github.com/kiali/kiali/blob/master/frontend/src/components/ChatBot/icons/kiali_logo.svg"
+IMAGE_URL={{ .Values.consoleLink.imageURL | quote }}
 
 for i in $(seq 1 60); do
   HOST=$(oc get route "${ROUTE_NAME}" -n "${GATEWAY_NS}" -o jsonpath='{.spec.host}' 2>/dev/null || true)
