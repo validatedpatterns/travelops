@@ -4,7 +4,7 @@
 
 ## PreRequisites
 
-- Running OpenShift Cluster (3Node, 3x(n))
+- Running OpenShift Cluster (3Node, 3x(n)) - Can be HyperShift or traditional OpenShift cluster
 - Logged into cluster or exported KUBECONFIG
 
 ## Deployment
@@ -24,7 +24,7 @@ cp values-secret.yaml.template $HOME/values-secret-travelops.yaml
 1. Get the route to the travel control portal
 
 ```shell
-CONTROL=http://$(oc get gtw travel-control-gateway -o jsonpath='{.status.addresses[0].value}')
+CONTROL=http://$(oc get gtw travel-control-gateway -n travel-control -o jsonpath='{.status.addresses[0].value}')
 ```
 
 In the travel control dashboard, use the sliders to change the requests for each travel locale. We need this to generate traffic
@@ -35,16 +35,19 @@ between the different services in the service mesh.
 1. Get the route to the kiali dashboard and log in using kubeadmin (or other credentialed user)
 
 ```shell
-KIALI=https://$(oc get route kiali -n istio-system -o jsonpath=’{.spec.host}’
+KIALI=https://$(oc get route kiali -n istio-system -o jsonpath={.spec.host})
 ```
 
-1. Use the kiali dashboard to verify the mTLS configuration and ensure that the travelops applications are configured in the mesh correctly:
+1. Check the mTLS configuration for the Mesh
 
-![kiali-dashboard](https://validatedpatterns.io/images/travelops/ossm-kiali-db-arrows.png)
+```shell
+oc get peerauthentication -o jsonpath='{.items[*].spec.mtls.mode}' -n istio-system
+```
 
-Within the dashboard verify that you see the following in the travel-agency, travel-control and travel-portal application contexts:
+The response should be `STRICT`
 
-- Each application (travel-agency, travel-control and travel-portal) should also show a lock within their respective context boxes.
+1. Within the dashboard verify that you see the following in the travel-agency, travel-control and travel-portal application contexts:
+
 - Each application (travel-agency, travel-control and travel-portal) should have a green check mark next number of applications.
 
 ## Conclusion
