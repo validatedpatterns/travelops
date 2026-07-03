@@ -129,7 +129,7 @@ def test_validate_mtls(openshift_dyn_client):
     )
     peerauth = peerauth.stdout.decode("utf-8")
     logger.info(f"peerauthentication: {peerauth}")
-    if re.search('STRICT', peerauth):
+    if re.search("^'STRICT'$", peerauth):
         logger.info("PASS: Peerauthentication is STRICT.")
     else:
         err_msg = "Peerauthentication is not STRICT"
