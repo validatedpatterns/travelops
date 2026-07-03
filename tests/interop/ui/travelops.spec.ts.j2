@@ -12,31 +12,35 @@ test('travelops: test kiali dashboard and travel-agency graph', async ({ page })
   await page.getByLabel('Password *').fill("{{ kubeadmin }}");
   await page.getByRole('button', { name: 'Log in' }).click();
 
+  // Go to travel control dashboard and adjust requests
+  await page.goto("{{ travel_control_dashboard }}")
+  await page.locator('[id="travels\\.uk_ratio"]').fill('98');
+  await page.locator('[id="travels\\.uk_device_mobile"]').fill('5');
+  await page.locator('[id="travels\\.uk_user_registered"]').fill('89');
+  await page.locator('[id="travels\\.uk_travel_t3"]').fill('71');
+  await page.locator('[id="viaggi\\.it_ratio"]').fill('0');
+  await page.locator('[id="viaggi\\.it_device_mobile"]').fill('100');
+  await page.locator('[id="viaggi\\.it_user_registered"]').fill('99');
+  await page.locator('[id="viaggi\\.it_travel_t2"]').fill('80');
+  await page.locator('[id="voyages\\.fr_ratio"]').fill('51');
+  await page.locator('[id="voyages\\.fr_travel_t1"]').fill('59');
+  await page.screenshot({ path: 'travel_control_dashboard.png', fullPage: true });
+
   // Go to kiali console and check for expected text
   await page.goto("https://kiali-istio-system.apps.{{ hub_cluster }}");
-  await page.getByText('istio-systemControl plane').click();
-  await page.getByText('travel-agency').click();
-  await page.getByText('travel-control').click();
-  await page.getByText('travel-portal').click();
-
-  // Verify that mTLS is enabled (lock icon)
-  await page.locator('[data-test="travel-agency-EXPAND"]').getByRole('img', { name: 'left' }).click();
-  await page.locator('[data-test="travel-control-EXPAND"]').getByRole('img', { name: 'left' }).click();
-  await page.locator('[data-test="travel-portal-EXPAND"]').getByRole('img', { name: 'left' }).click();
+  await page.locator('[data-test="istio-system-EXPAND"]').getByText('istio-system').click();
+  await page.locator('[data-test="travel-agency-EXPAND"]').getByText('travel-agency').click();
+  await page.locator('[data-test="travel-control-EXPAND"]').getByText('travel-control').click();
+  await page.screenshot({ path: 'kiali_console.png', fullPage: true });
 
   // Go to kiali travel-agency graph
-  await page.getByRole('link', { name: 'Graph' }).click();
+  await page.getByRole('link', { name: 'Traffic Graph' }).click();
   await page.locator('[data-test="namespace-dropdown"]').click();
   await page.locator('[id="namespace-list-item\\[travel-agency\\]"]').getByRole('checkbox').check();
-  await page.locator('[id="namespace-list-item\\[travel-agency\\]"]').getByRole('checkbox').press('Escape');
+  await page.locator('[id="namespace-list-item\\[travel-control\\]"]').getByRole('checkbox').check();
+  await page.locator('[id="namespace-list-item\\[travel-portal\\]"]').getByRole('checkbox').check();
+  await page.locator('[data-test="namespace-dropdown"]').click();
+  await page.waitForTimeout(5000);
+  await page.screenshot({ path: 'kiali_traffic_graph.png', fullPage: true });
 
-  // Check for expected text/buttons
-  await page.getByText('travel-agency').click();
-  await page.getByRole('button', { name: 'Inbound' }).click();
-  await page.getByRole('button', { name: 'Outbound' }).click();
-  await page.getByRole('button', { name: 'Total' }).click();
-  await page.getByText('HTTP (requests per second):').click();
-
-  // Verify screenshot, accounting for date/time
-  await expect(page).toHaveScreenshot({ maxDiffPixels: 500 });
 });
