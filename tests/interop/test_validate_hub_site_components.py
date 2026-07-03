@@ -5,8 +5,8 @@ import subprocess
 
 import pytest
 from ocp_resources.route import Route
-from openshift.dynamic.exceptions import NotFoundError
 from ocp_resources.storage_class import StorageClass
+from openshift.dynamic.exceptions import NotFoundError
 from validatedpatterns_tests.interop import application, components
 
 from . import __loggername__
