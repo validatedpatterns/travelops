@@ -12,13 +12,12 @@ logger = logging.getLogger(__loggername__)
 def test_subscription_status_hub(openshift_dyn_client):
     # These are the operator subscriptions and their associated namespaces
     expected_subs = {
-        "openshift-gitops-operator": ["openshift-operators"],
-        "advanced-cluster-management": ["open-cluster-management"],
-        "multicluster-engine": ["multicluster-engine"],
-        "jaeger-product": ["openshift-distributed-tracing"],
-        "elasticsearch-operator": ["openshift-operators-redhat"],
+        "openshift-gitops-operator": ["openshift-gitops-operator"],
+        "cluster-observability-operator": ["openshift-cluster-observability-operator"],
+        "opentelemetry-product": ["openshift-opentelemetry-operator"],
+        "tempo-product": ["openshift-tempo-operator"],
         "kiali-ossm": ["openshift-operators"],
-        "servicemeshoperator": ["openshift-operators"],
+        "servicemeshoperator3": ["openshift-operators"],
     }
 
     err_msg = subscription.subscription_status(
