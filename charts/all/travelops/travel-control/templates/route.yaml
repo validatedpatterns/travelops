@@ -1,0 +1,19 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: travel-control
+  namespace: travel-control
+  labels:
+    {{- include "travel-control.labels" . | nindent 4 }}
+spec:
+  to:
+    kind: Service
+    name: travel-control-gateway-istio
+    weight: 100
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}

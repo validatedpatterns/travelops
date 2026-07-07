@@ -102,3 +102,45 @@ for apps in control; do
   echo "✅ ${apps} in ${NS} is fully rolled out with sidecars."
 done
 {{- end }}
+
+{{- define "travel-control.consoleLink" }}
+#!/bin/bash
+set -euo pipefail
+
+GATEWAY_NS={{ .Values.gateway.namespace | default "travel-control" | quote }}
+ROUTE_NAME="travel-control"
+CONSOLE_LINK_NAME="travel-console-link"
+IMAGE_URL={{ .Values.consoleLink.imageURL | quote }}
+
+for i in $(seq 1 60); do
+  HOST=$(oc get route "${ROUTE_NAME}" -n "${GATEWAY_NS}" -o jsonpath='{.spec.host}' 2>/dev/null || true)
+  if [[ -n "${HOST}" ]]; then
+    break
+  fi
+  echo "Waiting for route host..."
+  sleep 5
+done
+
+if [[ -z "${HOST}" ]]; then
+  echo "ERROR: Route host not available"
+  exit 1
+fi
+
+HREF="https://${HOST}"
+
+oc apply -f - <<EOF
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: ${CONSOLE_LINK_NAME}
+spec:
+  href: "${HREF}"
+  location: ApplicationMenu
+  text: Travel Portal
+  applicationMenu:
+    section: Travelops
+    imageURL: "${IMAGE_URL}"
+EOF
+
+echo "ConsoleLink updated with href=${HREF}"
+{{- end }}

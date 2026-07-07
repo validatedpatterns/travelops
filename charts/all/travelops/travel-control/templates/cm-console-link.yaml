@@ -1,0 +1,10 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: console-link
+  namespace: travel-control
+data:
+  console-link.sh: |
+{{- include "travel-control.consoleLink" . | indent 4 }}
+{{- end }}

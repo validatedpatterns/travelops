@@ -1,0 +1,33 @@
+{{- if .Values.gateway.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+  name: console-link
+  namespace: travel-control
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+      - image: {{ .Values.job.image }}
+        name: console-link
+        command:
+          - /bin/bash
+          - /usr/local/bin/console-link.sh
+        volumeMounts:
+        - mountPath: /usr/local/bin/console-link.sh
+          name: console-link
+          subPath: console-link.sh
+      volumes:
+        - name: console-link
+          configMap:
+            name: console-link
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      serviceAccount: {{ .Values.rbac.serviceAccountName }}
+      terminationGracePeriodSeconds: 400
+{{- end }}
